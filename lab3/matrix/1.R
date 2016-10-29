@@ -93,6 +93,5 @@ names(testList) <- c("bool","string","numeric")
 # $numeric
 # [1] 1
 
-
 typeof(testList)
 # [1] "list"
