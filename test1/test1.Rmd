@@ -1,0 +1,184 @@
+---
+title: "test1"
+output: html_document
+---
+
+##Задание 1
+
+### 1. Сгенерировать 200 случайных значений из стандартного экспоненциального распределения 
+
+```{r}
+  exp.1 <- rexp(n=200)
+  mean(exp.1)
+  sd(exp.1)
+```
+
+### 2. Сгенерировать 200 случайных значений из стандартного экспоненциального распределения 
+
+#### λ=0.1
+
+```{r}
+  exp.0.1 <- rexp(n=200,rate=0.1)
+  mean(exp.0.1)
+  sd(exp.0.1)
+```
+
+#### λ=0.5
+
+```{r}
+  exp.0.5 <- rexp(n=200,rate=0.5)
+   mean(exp.0.5)
+   sd(exp.0.5)
+```
+
+#### λ=5
+
+```{r}
+  exp.5 <- rexp(n=200,rate=5)
+  mean(exp.5)
+  sd(exp.5)
+```
+
+
+#### λ=10
+```{r}
+  exp.10 <- rexp(n=200,rate=10)
+  mean(exp.10)
+  sd(exp.10)
+```
+
+### 3. Сгенерировать 200 случайных значений из стандартного экспоненциального распределения 
+
+#### 1. Использование функции hist()
+```{r}
+    layout(mat = matrix(c(1,1,2,2,3,3,
+                      0,4,4,5,5,0), nrow = 2, byrow = TRUE))
+    hist(exp.1,breaks = 25)
+    hist(exp.0.1,breaks = 25)
+    hist(exp.0.5,breaks = 25)
+    hist(exp.5,breaks = 25)
+    hist(exp.10,breaks = 25)
+```
+
+#### 2. Использование функции plot()
+```{r}
+    layout(mat = matrix(c(1,1,2,2,3,3,
+                      0,4,4,5,5,0), nrow = 2, byrow = TRUE))
+    plot(exp.1)
+    plot(exp.0.1)
+    plot(exp.0.5)
+    plot(exp.5)
+    plot(exp.10)
+```
+
+#### 3. Построение диаграммы рассеяния (scatteplot)
+```{r}
+plot(exp.1,exp.10,xlab = "Exp 1",ylab = "Exp 10")
+```
+
+### 4. Построение диаграммы рассеяния
+
+```{r}
+  mean.exp.1 <- mean(exp.1)
+  mean.exp.0.1 <- mean(exp.0.1)
+  mean.exp.0.5 <- mean(exp.0.5)
+  mean.exp.5 <- mean(exp.5)
+  mean.exp.10 <- mean(exp.10)
+  exp.means <- rep(c(mean.exp.1,mean.exp.0.1,mean.exp.0.5,mean.exp.5,mean.exp.10),times=40)
+  
+  sd.exp.1 <- sd(exp.1)
+  sd.exp.0.1 <- sd(exp.0.1)
+  sd.exp.0.5 <- sd(exp.0.5)
+  sd.exp.5 <- sd(exp.5)
+  sd.exp.10 <- sd(exp.10)
+  exp.sd <- rep(c(sd.exp.1,sd.exp.0.1,sd.exp.0.5,sd.exp.5,sd.exp.10),times=40)
+  
+  
+```
+
+##### 1. Пять средних относительно каждого из пяти векторов с различными значениями λ 
+
+```{r}
+    layout(mat = matrix(c(1,1,2,2,3,3,
+                      0,4,4,5,5,0), nrow = 2, byrow = TRUE))
+    plot(exp.means,exp.1)
+    plot(exp.means,exp.0.1)
+    plot(exp.means,exp.0.5)
+    plot(exp.means,exp.5)
+    plot(exp.means,exp.10)
+```
+
+##### 2. Пять стандартных отклонений относительно каждого из пяти векторов с различными значениями λ
+
+```{r}
+    layout(mat = matrix(c(1,1,2,2,3,3,
+                      0,4,4,5,5,0), nrow = 2, byrow = TRUE))
+    plot(exp.sd,exp.1)
+    plot(exp.sd,exp.0.1)
+    plot(exp.sd,exp.0.5)
+    plot(exp.sd,exp.5)
+    plot(exp.sd,exp.10)
+```
+
+##### 3. Пять средних относительно вектора с пятью стандартными отклонениями 
+```{r}
+    plot(exp.means,exp.sd)
+```
+
+## Задание 2
+
+### 1. Сгенирировать 1100000 чисел из стандартного экспоненциального распределения
+```{r}
+   huge.exp.1 <- rexp(n=1100000)
+   mean(huge.exp.1)
+   sd(huge.exp.1)
+```
+
+#### 2. Построение гистограмм и графика 
+
+```{r}
+   hist(huge.exp.1,breaks = 100)
+   plot(huge.exp.1)
+```
+
+> Функция больше соответствует плотности экспоненциального распределения λ*exp(-λx). Гистограмма имеет вид данной плотности распределения без выбросов, подобно методу Монте-Карло за счёт большого количества испытаний(выборки)
+
+#### 3. Получение среднего по вектору, где значения строго больше 1
+```{r}
+  mean(huge.exp.1[huge.exp.1>1])
+```
+
+#### 4. Построение матрицы 1100 строк на 1000 колонок
+```{r}
+huge.exp.1.mat <- matrix(huge.exp.1,ncol =1000,nrow = 1100)
+  hist(huge.exp.1.mat,breaks = 100)
+```
+
+> Данные распределяются по столбикам, заполнение матрицы дает возможность быстро посчитать среднее по столбцам или строкам без движения по вектору
+
+#### 5. Рассчёт среднего по 137-ой колонке
+```{r}
+  mean(huge.exp.1.mat[,137])
+```
+
+#### 6. Среднее по 1000 колонкам и построение гистограммы
+```{r}
+  vector.mean.1000 <- colMeans(huge.exp.1.mat)
+  hist(vector.mean.1000)
+  3*sqrt(var(vector.mean.1000)) #3*сигма
+```
+
+
+> Данная гистограмма показывает сведение экспоненциального распределения для λ=1 к ПРИБЛИЖЕННОМУ нормальному распределению с "перекосом" с mean=1 и 3*сигма
+
+
+#### 7. Возведение значений в квадрат 
+```{r}
+  huge.exp.1.pow2 <- huge.exp.1**2
+  mean(huge.exp.1.pow2)
+  sd(huge.exp.1.pow2)
+```
+
+> Ответ основан на моменте 2 порядка для матожидания $$ E\left [ X^{n} \right ]=\frac{n!}{\lambda ^n}\rightarrow E\left [ X^2 \right ]=\frac{2}{\lambda ^2}$$. При  λ=1, Матожидание или среднее у вектора квадратов значений $$\frac{2}{1^2}=2$$.
+
+$$\frac{sd(vec1))}{sd(vec1Pow2))}=\frac{\sqrt{\frac{\sum_{i=1}^{n}\left ( x_{i}-mean(vec1)) \right )^{2}}{n-1}}}{\sqrt{\frac{\sum_{i=1}^{n}\left ( x_{i}-mean(vec1Pow2)) \right )^{2}}{n-1}}}=\sqrt{\sum_{i=1}^{n}\frac{\left ( x_{i}-mean(vec1)) \right )^{2}}{\left ( x_{i}-mean(vec1Pow2)) \right )^{2}}}=\sqrt{\sum_{i=1}^{n}\frac{x_{i}^{2}-2x_{i}+1}{x_{i}^{4}-4x_{i}^{2}+4}}=\sqrt{\lim_{x_{i}\rightarrow 2}}\frac{\frac{1}{x_{i}^2}-\frac{2}{x_{i}^3}+\frac{1}{x_{i}^4}}{1-\frac{4}{x_{i}^2}+\frac{4}{x_{i}^4}}=\sqrt{\frac{\frac{1}{4}-\frac{2}{8}+\frac{1}{16}}{1-\frac{4}{4}+\frac{4}{16}}}=\sqrt{\frac{\frac{1}{16}}{\frac{4}{16}}}=\sqrt{\frac{1}{4}}=0.5$$
