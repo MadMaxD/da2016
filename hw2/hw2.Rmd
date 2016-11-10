@@ -1,0 +1,164 @@
+---
+title: "hw2"
+output: html_document
+---
+# Домашняя работа №2
+## Загрузка и очистка данных
+### 1,2 Загрузка данных в датафрейм и вывод количества столбцов и строк
+```{r}
+  data <- read.csv("calif_penn_2011.csv");
+  nrow(data)
+  ncol(data)
+```
+
+### 3. Подсчет количества NA в каждом столбце на основе применения функции apply() для проверки всех элементов датафрема.
+```{r}
+    a <- colSums(apply(data,c(1,2), is.na))
+    sum(a)
+```
+### 4. Применение функции na.omit для возврата датафрейма со строками, в которых нет NA.
+```{r}
+  data.new <- na.omit(data)
+  nrow(data.new)
+```
+> Было удалено: 670 строк
+  В 3ем пункте через функцию sum(a) количество NA=3034, но строк 670, т.к. NA может несколько раз присутствовать в одной строке
+  
+## Новые дома
+### Построение диаграммы Median_house_value(Built_2005_or_later)
+```{r}
+    B.2005_later <- data.new[,'Built_2005_or_later']
+    M.H.V <- data.new[,'Median_house_value']
+    plot(B.2005_later,M.H.V)
+```
+
+### Построение диаграммы Median_house_value(Built_2005_or_later) для Калифорнии
+```{r}
+    B.2005_later.6 <- data.new$Built_2005_or_later[data.new$STATEFP==6]
+    M.H.V.6 <- data.new$Median_house_value[data.new$STATEFP==6]
+    plot(B.2005_later.6,M.H.V.6)
+```
+
+###Построение диаграммы Median_house_value(Built_2005_or_later) для Пенсильвания
+```{r}
+    B.2005_later.42 <- data.new$Built_2005_or_later[data.new$STATEFP==42]
+    M.H.V.42 <- data.new$Median_house_value[data.new$STATEFP==42]
+    plot(B.2005_later.42,M.H.V.42)
+```
+
+## Незанятые дома
+### Добавление колонки vacancy_rate(Уровень найма) в датафрейм data.
+```{r}
+    data$vacancy_rate <- data$Total_units/data$Vacant_units;
+    VC <- replace(data$vacancy_rate,data$vacancy_rate==Inf,NA);
+    ## замена Inf,которая проявляется при делении на ноль
+```
+
+### Нахождение максимума, минимума, среднего и медианы. Отбрасываются все NA при подсчёте
+```{r}
+    max(VC,na.rm=T)
+    min(VC,na.rm=T)
+    mean(VC,na.rm = T)
+    median(VC,na.rm = T)
+```
+### Построение диаграммы Vacancy_rate(Median_house_value)
+```{r}
+    plot(data$Median_house_value,data$vacancy_rate,xlab="Median_house_value",ylab="Vacancy_rate")
+```
+
+>Доля незанятых домов уменьшается с росотом медианы стоимости домов. В интервале медианы стоимости домов от 1е+05 до 5е+05 доля незанятых домов примерно равна.
+
+##Корреляция
+
+```{r eval=FALSE}
+ acc <- c()
+for (tract in 1:nrow(ca_pa)) {
+  if (ca_pa$STATEFP[tract] == 6) {
+    if (ca_pa$COUNTYFP[tract] == 1) {
+      acc <- c(acc, tract)
+    }
+  }
+}
+accmv <- c()
+for (tract in acc) {
+  accmv <- c(accmv, ca_pa[tract,10])
+}
+median(accmv)
+```
+
+> Данный код делает перебор по датафреймы и выбирает штат и округ, а номер строки добавляет в вектор acc. Второй цикл перебирает вектор acc и выбирает значения Median_house_value,которые попадают в вектор accmv и находится медиана через функцию median() 
+
+### Код выше в одну строку
+```{r}
+InOneRow <- data[which(data$STATEFP==6 & data$COUNTYFP==1),10]
+median(InOneRow,na.rm=T)
+```
+### Выборка процента построенных домовладений в округах (Butte County, Santa Clara, York County) и нахождение среднего
+```{r}
+data.6.7.Butte_County <- data[which(data$STATEFP==6 & data$COUNTYFP==7),16]
+data.6.85.Santa_Clara <- data[which(data$STATEFP==6 & data$COUNTYFP==85),16]
+data.42.133.York_County <- data[which(data$STATEFP==42 & data$COUNTYFP==133),16]
+
+mean(data.6.7.Butte_County,na.rm=T)
+mean(data.6.85.Santa_Clara,na.rm=T)
+mean(data.42.133.York_County,na.rm=T)
+```
+### Применение функции cor() для векторов Median_house_value и Built_2005_or_later
+#### 1. Для всех данных
+```{r}
+  cor(data$Median_house_value,data$Built_2005_or_later,use = "complete.obs")
+```
+#### 2. Для Калифорнии
+```{r}
+  MHV.California <- data[which(data$STATEFP==6),10]
+  B2005.California <- data[which(data$STATEFP==6),16]
+  cor(MHV.California,B2005.California,use = "complete.obs")
+```
+#### 3. Для Пенсильвании
+```{r}
+  MHV.Pennsylvania <- data[which(data$STATEFP==42),10]
+  B2005.Pennsylvania <- data[which(data$STATEFP==42),16]
+  cor(MHV.Pennsylvania,B2005.Pennsylvania,use = "complete.obs")
+```
+#### 4. Для округа Butte County
+```{r}
+  MHV.California.ButteCounty <- data[which(data$STATEFP==6 & data$COUNTYFP==7),10]
+  B2005.California.ButteCounty <- data[which(data$STATEFP==6 & data$COUNTYFP==7),16]
+  cor(MHV.California.ButteCounty,B2005.California.ButteCounty,use = "complete.obs")
+```
+#### 5. Для округа Santa Clara
+```{r}
+  MHV.California.SantaClara <- data[which(data$STATEFP==6 & data$COUNTYFP==85),10]
+  B2005.California.SantaClara <- data[which(data$STATEFP==6 & data$COUNTYFP==85),16]
+  cor(MHV.California.SantaClara,B2005.California.SantaClara,use = "complete.obs")
+```
+#### 6. Для округа York County
+```{r}
+  MHV.Pennsylvania.YorkCounty <- data[which(data$STATEFP==42 & data$COUNTYFP==133),10]
+  B2005.Pennsylvania.YorkCounty <- data[which(data$STATEFP==42 & data$COUNTYFP==133),16]
+  cor(MHV.Pennsylvania.YorkCounty,B2005.Pennsylvania.YorkCounty,use = "complete.obs")
+
+```
+
+### Нахождение Median_house_value и Median_household_income для трёх округов
+```{r}
+  MHV.California.ButteCounty <- data[which(data$STATEFP==6 & data$COUNTYFP==7),10]
+  MHI.California.ButteCounty <- data[which(data$STATEFP==6 & data$COUNTYFP==7),33]
+  
+
+  MHV.California.SantaClara <- data[which(data$STATEFP==6 & data$COUNTYFP==85),10]
+  MHI.California.SantaClara <- data[which(data$STATEFP==6 & data$COUNTYFP==85),33]
+  
+
+  MHV.Pennsylvania.YorkCounty <- data[which(data$STATEFP==42 & data$COUNTYFP==133),10]
+  MHI.Pennsylvania.YorkCounty <- data[which(data$STATEFP==42 & data$COUNTYFP==133),33]
+```
+
+### Построение графиков Median_house_value(Median_household_income) для трех округов
+```{r}
+  layout(matrix(c(1,2,3), 3, 1,nrow=T))
+  plot(MHI.California.ButteCounty,MHV.California.ButteCounty,col="red",pch=19)
+  plot(MHI.California.SantaClara,MHV.California.SantaClara,col="blue",pch=17)
+  plot(MHI.Pennsylvania.YorkCounty,MHV.Pennsylvania.YorkCounty,col="green",pch=15)
+  
+```

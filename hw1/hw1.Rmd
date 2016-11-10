@@ -54,15 +54,23 @@ tail(data.df)
 ```{r}
   fixed.df <- data.df
   fixed.df$daily <- ifelse(fixed.df$daily<0,0,fixed.df$daily)  
-  hist(fixed.df$daily,xlab="Daily",main = "Freq")
+  p1 <- hist(fixed.df$daily,xlab="Daily",main = "Freq")
 ```
 
 >Создание нового датафрейма fixed.df, где отрицательные значения не используются при построение гистограммы
 
 ```{r}
-  fixed.df <- data.df
-  t <- fixed.df$daily[fixed.df$daily>=0]
-  hist(t,xlab="Daily", main = "Freq") 
+  fixed.df1 <- data.df
+  t <- fixed.df1$daily[fixed.df1$daily>=0]
+  p2 <- hist(t) 
+```
+
+#### Сравнение гистограмм
+
+```{r}
+plot( p1, col=rgb(0,0,1,0.25),xlab = "count",main = "Histogram of frequency")
+legend("topright", c("replace -number on 0", "only value>=0"), col=c("blue", "red"),lwd=10)
+plot( p2, col=rgb(1,0,0,0.25),add=T)
 ```
 
 ***
