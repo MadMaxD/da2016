@@ -5,8 +5,12 @@ output: html_document
 # Лабораторная работа 3
 ## Задание 1
 ### 1. Чтение html с помощью readLines.
+```{r echo=FALSE}
+  library(stringr)
+```
 ```{r}
   data <- readLines("https://raw.githubusercontent.com/SergeyMirvoda/da2016/master/data/forbes.htm",warn = T)
+  
 ```
 #### 1. Количество строк
 ```{r}
@@ -41,7 +45,14 @@ output: html_document
 ```{r}
     length(f[f=="$4,6 "])
 ```
-   
+
+## Дополнительно решение через библиотечные функции stringr
+```{r}
+  k <- str_match(data,"[$](\\d{1,2}[,]?\\d?)\\s")[,2]
+   k[!is.na(k)]
+```   
+
+> Данные преобразуются во втором задании аналогично
    
 ## Задание 2   
    
