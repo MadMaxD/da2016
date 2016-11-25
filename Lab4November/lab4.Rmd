@@ -1,0 +1,149 @@
+---
+title: "lab4"
+output: html_document
+---
+
+#Лабораторная №4
+
+## 1. Загрузка данных
+```{r}
+library(MASS)
+data(cats)
+```
+## 2. Выполнение команды summary(cats) (Предоставление статистических данных для каждого столбца)
+```{r}
+    summary(cats)
+```
+## 3. Рассчет среднего (mean), стандартного отклонения (sd) и дисперсии (var) веса кошачьих сердец.
+```{r}
+    M.H <- mean(cats$Hwt)
+    S.H <- sd(cats$Hwt)
+    V.H <- var(cats$Hwt)
+```
+## 4. Расчёт параметров a и s и округление до 2 знаков после запятой
+```{r}
+    a <- M.H**2/V.H**2
+    s <- V.H**2/M.H
+    a.round <- round(a,2) 
+    s.round <- round(s,2) 
+```
+## 5. Создание функции my.gamma
+```{r}
+    my.gamma <- function(x){
+      x.M <- mean(x)
+      x.V <- var(x)
+      V.V <- c(round(x.M**2/x.V**2,2), round(x.V**2/x.M,2))
+      names(V.V) <- c("a","s")
+      return (V.V)
+    }
+```
+## 6. Функция возвращает вектор со значениями a и s. Правильная реализация функции возвращает те же значения, что и при раздельной реализации.
+## 7. Построение гистограммы весов(распределений) для всех котов.
+```{r}
+    hist(cats$Hwt,prob=T,breaks = 20,xlab="Hwt all cats", main="Density HWt all cats")
+    curve(dgamma(x, shape=a.round, scale=s.round),add=T, col='red')
+```
+
+## 8. Использование функции для M and F для получения a и s
+```{r}
+    
+    Male <- my.gamma(cats$Hwt[cats$Sex=='M'])
+    message("For M")
+    print(Male)
+    
+    Female <- my.gamma(cats$Hwt[cats$Sex=='F'])
+    message("For F")
+    print(Female)
+```
+## 9. Плотность распрделения
+### 9.1 Отдельно
+```{r}
+  hist(cats$Hwt[cats$Sex=='M'], col = 'blue',probability = T, xlab="Male Hwt", main="Density Male HWt")
+  curve(dgamma(x, shape=Male[1], scale=Male[2]),add=T, lwd=2)
+```
+
+```{r}
+  hist(cats$Hwt[cats$Sex=='F'],probability = T,col='red',xlab="Female Hwt", main="Density Female HWt")
+  curve(dgamma(x, shape=Female[1], scale=Female[2]),add=T,lwd=2)
+```
+
+### 9.2 На одной гистограмме
+```{r}
+  hist(cats$Hwt,prob=T,breaks = 20,xlab="Hwt all cats", main="Density HWt all cats")
+  legend("topright",c("Female", "Male"),col=c('red','blue'),lwd=2)
+  curve(dgamma(x, shape=Male[1], scale=Male[2]),add=T, lwd=2,col='blue')
+  curve(dgamma(x, shape=Female[1], scale=Female[2]),add=T,lwd=2,col='red')
+```
+
+## 10. Разделение на группы
+### 10.1 Отдельными списками из M и F
+```{r}
+    M <- cats[ which(cats$Sex=='M'),]
+    F <- cats[ which(cats$Sex=='F'),]
+    M.1 <- M[c(1:ceiling(nrow(M)/2)),]
+    M.2 <- M[c((1+ceiling(nrow(M)/2)):nrow(M)),]
+    F.1 <- F[c(1:ceiling(nrow(F)/2)),]
+    F.2 <- F[c((1+ceiling(nrow(F)/2)):nrow(F)),]
+    M.1.F.1 <- rbind(M.1,F.1)
+    M.1.F.2 <- rbind(M.1,F.2)
+    M.2.F.2 <- rbind(M.2,F.2)
+    M.2.F.1 <- rbind(M.2,F.1)
+```
+#### Нахождение показателей гамма-распределения
+```{r}
+    M1F1.HWT <- my.gamma(M.1.F.1$Hwt)
+    M1F2.HWT <- my.gamma(M.1.F.2$Hwt)
+    M2F1.HWT <- my.gamma(M.2.F.1$Hwt)
+    M2F2.HWT <- my.gamma(M.2.F.2$Hwt)
+```
+#### Печать показателей
+```{r}
+    print(M1F1.HWT)
+    print(M1F2.HWT)
+    print(M2F1.HWT)
+    print(M2F2.HWT)
+```
+ 
+```{r echo=FALSE}
+    type <- c('all','M','F','M1F1','M1F2','M2F1','M2F2')
+    a <- c(a.round,Male[1],Female[1],M1F1.HWT[1],M1F2.HWT[1],M2F1.HWT[1],M2F2.HWT[1]) 
+    s <- c(s.round,Male[2],Female[2],M1F1.HWT[2],M1F2.HWT[2],M2F1.HWT[2],M2F2.HWT[2])
+    Mean <- c(a.round*s.round, prod(Male),prod(Female),prod(M1F1.HWT),prod(M1F2.HWT),prod(M2F1.HWT),prod(M2F2.HWT))
+    Var <- c(a.round*s.round**2,Male[1]*Male[2]**2,Female[1]*Female[2]**2,M1F1.HWT[1]*M1F1.HWT[2]**2,M1F2.HWT[1]*M1F2.HWT[2]**2,M2F1.HWT[1]*M2F1.HWT[2]**2,M2F2.HWT[1]*M2F2.HWT[2]**2)
+    Table.Value <- data.frame(type,a,s,Mean,Var)
+```
+#### Все показатели для разных сочетаний
+```{r}
+    print(Table.Value)
+```
+### 10.2 Случайное разбиение на 2 группы
+```{r}
+test.fun <- function(){
+    Select1 <- sort(sample.int(144,72))
+    group1 <- cats[Select1,]
+    Select2 <-  which(!(1:nrow(cats)) %in% Select1)
+    group2 <- cats[Select2,]
+    type <- c("Group1","Group2")
+    a <- c(my.gamma(group1$Hwt)[1],my.gamma(group2$Hwt)[1])
+    s <- c(my.gamma(group1$Hwt)[2],my.gamma(group2$Hwt)[2])
+    M <- c(my.gamma(group1$Hwt)[1]*my.gamma(group1$Hwt)[2],my.gamma(group2$Hwt)[1]*my.gamma(group2$Hwt)[2])
+    t <- data.frame(type,a,s,M)
+    return(t)
+}    
+```
+#### Вызов функций
+```{r echo=FALSE}
+    test.fun()
+    test.fun()
+    test.fun()
+    test.fun()
+    test.fun()
+    test.fun()
+    test.fun()
+    test.fun()
+    test.fun()
+    test.fun()
+    test.fun()
+    test.fun()
+```
+> При разделении списками, происходит сдвиг среднего в сторону преобладающих показателей M or F. При разделении случайным образом, показатель среднего каждой группы находиться около среднего значения для всех котов.
