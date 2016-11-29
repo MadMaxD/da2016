@@ -32,31 +32,39 @@ estimate.scaling.exponent <- function(a, y0=6611, response=gmp$pcgmp,
 ## Функция удаления строки
 ```{r}
 plot.with.dif.point.and.a <- function(a = 0.15,clear.row = 0){
-  
-  if(clear.row==1){
+
+    if(clear.row==1){
     row.for.clear <- sample.int(nrow(gmp),1)
     Select <-  which(!(1:nrow(gmp)) %in% row.for.clear)
     gmp <<-gmp[Select,]
   }
   gmp$predicted <- 6611*(gmp$pop)^estimate.scaling.exponent(a)[[1]]
-  p.plot <- plot(pcgmp~pop, data=gmp, xlab="Население", log="xy",ylab="Доход на душу населения ($/человеко-год)", main="Метрополии США, 2006")
   print(paste("a:",estimate.scaling.exponent(a)[[1]],"iterations:", estimate.scaling.exponent(a)[[2]]))
-  print(p.plot)
-  print(lines(gmp$pop, gmp$predicted, col = "red"))
+  lines(gmp$pop, gmp$predicted, col = "red")
 }
 ```
+
 ## Вызов функции с разным а и вызов функции с удалением случайных точек
 ```{r}
     
+plot(pcgmp~pop, data=gmp, xlab="Население", log="xy",ylab="Доход на душу населения ($/человеко-год)", main="Метрополии США, 2006") 
       plot.with.dif.point.and.a(0.3)
+      plot(pcgmp~pop, data=gmp, xlab="Население", log="xy",ylab="Доход на душу населения ($/человеко-год)", main="Метрополии США, 2006") 
       plot.with.dif.point.and.a(0.25)
+      plot(pcgmp~pop, data=gmp, xlab="Население", log="xy",ylab="Доход на душу населения ($/человеко-год)", main="Метрополии США, 2006") 
       plot.with.dif.point.and.a(0.2)
+      plot(pcgmp~pop, data=gmp, xlab="Население", log="xy",ylab="Доход на душу населения ($/человеко-год)", main="Метрополии США, 2006") 
       plot.with.dif.point.and.a(0.15)
+      plot(pcgmp~pop, data=gmp, xlab="Население", log="xy",ylab="Доход на душу населения ($/человеко-год)", main="Метрополии США, 2006") 
       plot.with.dif.point.and.a(0.1)
+      plot(pcgmp~pop, data=gmp, xlab="Население", log="xy",ylab="Доход на душу населения ($/человеко-год)", main="Метрополии США, 2006") 
       plot.with.dif.point.and.a(0.05)
+      plot(pcgmp~pop, data=gmp, xlab="Население", log="xy",ylab="Доход на душу населения ($/человеко-год)", main="Метрополии США, 2006") 
       plot.with.dif.point.and.a(0.12)
       
+plot(pcgmp~pop, data=gmp, xlab="Население", log="xy",ylab="Доход на душу населения ($/человеко-год)", main="Метрополии США, 2006")      
       for(i in 1:365){
+        print(paste("Количество точек", nrow(gmp)))
         plot.with.dif.point.and.a(0.12,1)
       }
     
@@ -66,5 +74,6 @@ plot.with.dif.point.and.a <- function(a = 0.15,clear.row = 0){
 
  1. Было установлено, что показатель "а" меняется незначительно и держится около 0.12 и количество итераций держится в одном интервале, нестабильное значение итераций проявляется при удалении значимых точек 
  2. Чем ближе стартовое значение "а" к искомой "а", тем меньше количество итераций
+
 ***
 
