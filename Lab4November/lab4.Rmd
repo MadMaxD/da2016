@@ -41,7 +41,7 @@ data(cats)
 ## 7. Построение гистограммы весов(распределений) для всех котов.
 ```{r}
     hist(cats$Hwt,prob=T,breaks = 20,xlab="Hwt all cats", main="Density HWt all cats")
-    curve(dgamma(x, shape=a.round, scale=s.round),add=T, col='red')
+    curve(dgamma(x, shape=a.round, scale=s.round),from=1,to=20,add=T, col='red')
 ```
 
 ## 8. Использование функции для M and F для получения a и s
@@ -58,21 +58,21 @@ data(cats)
 ## 9. Плотность распрделения
 ### 9.1 Отдельно
 ```{r}
-  hist(cats$Hwt[cats$Sex=='M'], col = 'blue',probability = T, xlab="Male Hwt", main="Density Male HWt")
-  curve(dgamma(x, shape=Male[1], scale=Male[2]),add=T, lwd=2)
+  hist(cats$Hwt[cats$Sex=='M'], col = 'blue',probability = T, xlab="Male Hwt", main="Density Male HWt",breaks = 50)
+  curve(dgamma(x, shape=Male[1], scale=Male[2]),from=1,to=50,add=T, lwd=2)
 ```
 
 ```{r}
-  hist(cats$Hwt[cats$Sex=='F'],probability = T,col='red',xlab="Female Hwt", main="Density Female HWt")
-  curve(dgamma(x, shape=Female[1], scale=Female[2]),add=T,lwd=2)
+  hist(cats$Hwt[cats$Sex=='F'],probability = T,col='red',xlab="Female Hwt", main="Density Female HWt",breaks = 20)
+  curve(dgamma(x, shape=Female[1], scale=Female[2]),from=1,to=20,add=T,lwd=2)
 ```
 
 ### 9.2 На одной гистограмме
 ```{r}
-  hist(cats$Hwt,prob=T,breaks = 20,xlab="Hwt all cats", main="Density HWt all cats")
+  hist(cats$Hwt,prob=T,breaks = 50,xlab="Hwt all cats", main="Density HWt all cats")
   legend("topright",c("Female", "Male"),col=c('red','blue'),lwd=2)
-  curve(dgamma(x, shape=Male[1], scale=Male[2]),add=T, lwd=2,col='blue')
-  curve(dgamma(x, shape=Female[1], scale=Female[2]),add=T,lwd=2,col='red')
+  curve(dgamma(x, shape=Male[1], scale=Male[2]),from=1,to=50,add=T, lwd=2,col='blue')
+  curve(dgamma(x, shape=Female[1], scale=Female[2]),from=1,to=50,add=T,lwd=2,col='red')
 ```
 
 ## 10. Разделение на группы
@@ -146,4 +146,7 @@ test.fun <- function(){
     test.fun()
     test.fun()
 ```
-> При разделении списками, происходит сдвиг среднего в сторону преобладающих показателей M or F. При разделении случайным образом, показатель среднего каждой группы находиться около среднего значения для всех котов.
+> * При разделении списками, происходит сдвиг среднего в сторону преобладающих показателей M or F. 
+* При разделении случайным образом, показатель среднего каждой группы находиться около среднего значения для всех кошачьих около 10.
+* У кошек преобладает вес сердца около 9 с ярковыраженным пиком
+* У котов преобладает вес сердца около 11, однако нет ярко выраженного пика, а идет постепенное уменьшение 
