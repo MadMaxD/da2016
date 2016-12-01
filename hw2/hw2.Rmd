@@ -6,7 +6,7 @@ output: html_document
 ## Загрузка и очистка данных
 ### 1,2 Загрузка данных в датафрейм и вывод количества столбцов и строк
 ```{r}
-  data <- read.csv("calif_penn_2011.csv");
+  data <- read.csv("https://raw.githubusercontent.com/SergeyMirvoda/da2016/master/data/calif_penn_2011.csv");
   nrow(data)
   ncol(data)
 ```
@@ -49,24 +49,22 @@ output: html_document
 ## Незанятые дома
 ### Добавление колонки vacancy_rate(Уровень найма) в датафрейм data.
 ```{r}
-    data$vacancy_rate <- data$Total_units/data$Vacant_units;
-    VC <- replace(data$vacancy_rate,data$vacancy_rate==Inf,NA);
-    ## замена Inf,которая проявляется при делении на ноль
+    data.new$vacancy_rate <- data.new$Vacant_units/data.new$Total_units;
 ```
 
-### Нахождение максимума, минимума, среднего и медианы. Отбрасываются все NA при подсчёте
+### Нахождение максимума, минимума, среднего и медианы. 
 ```{r}
-    max(VC,na.rm=T)
-    min(VC,na.rm=T)
-    mean(VC,na.rm = T)
-    median(VC,na.rm = T)
+    max(data.new$vacancy_rate)
+    min(data.new$vacancy_rate)
+    mean(data.new$vacancy_rate)
+    median(data.new$vacancy_rate)
 ```
 ### Построение диаграммы Vacancy_rate(Median_house_value)
 ```{r}
-    plot(data$Median_house_value,data$vacancy_rate,xlab="Median_house_value",ylab="Vacancy_rate")
+    plot(data.new$Median_house_value,data.new$vacancy_rate,xlab="Median_house_value",ylab="Vacancy_rate")
 ```
 
->Доля незанятых домов уменьшается с росотом медианы стоимости домов. В интервале медианы стоимости домов от 1е+05 до 5е+05 доля незанятых домов примерно равна.
+>Доля незанятых домов уменьшается с росотом медианы стоимости домов. 
 
 ##Корреляция
 
@@ -90,14 +88,14 @@ median(accmv)
 
 ### Код выше в одну строку
 ```{r}
-InOneRow <- data[which(data$STATEFP==6 & data$COUNTYFP==1),10]
+InOneRow <- data.new[which(data.new$STATEFP==6 & data.new$COUNTYFP==1),10]
 median(InOneRow,na.rm=T)
 ```
 ### Выборка процента построенных домовладений в округах (Butte County, Santa Clara, York County) и нахождение среднего
 ```{r}
-data.6.7.Butte_County <- data[which(data$STATEFP==6 & data$COUNTYFP==7),16]
-data.6.85.Santa_Clara <- data[which(data$STATEFP==6 & data$COUNTYFP==85),16]
-data.42.133.York_County <- data[which(data$STATEFP==42 & data$COUNTYFP==133),16]
+data.6.7.Butte_County <- data.new[which(data.new$STATEFP==6 & data.new$COUNTYFP==7),16]
+data.6.85.Santa_Clara <- data.new[which(data.new$STATEFP==6 & data.new$COUNTYFP==85),16]
+data.42.133.York_County <- data.new[which(data.new$STATEFP==42 & data.new$COUNTYFP==133),16]
 
 mean(data.6.7.Butte_County,na.rm=T)
 mean(data.6.85.Santa_Clara,na.rm=T)
@@ -106,52 +104,52 @@ mean(data.42.133.York_County,na.rm=T)
 ### Применение функции cor() для векторов Median_house_value и Built_2005_or_later
 #### 1. Для всех данных
 ```{r}
-  cor(data$Median_house_value,data$Built_2005_or_later,use = "complete.obs")
+  cor(data.new$Median_house_value,data.new$Built_2005_or_later,use = "complete.obs")
 ```
 #### 2. Для Калифорнии
 ```{r}
-  MHV.California <- data[which(data$STATEFP==6),10]
-  B2005.California <- data[which(data$STATEFP==6),16]
+  MHV.California <- data.new[which(data.new$STATEFP==6),10]
+  B2005.California <- data.new[which(data.new$STATEFP==6),16]
   cor(MHV.California,B2005.California,use = "complete.obs")
 ```
 #### 3. Для Пенсильвании
 ```{r}
-  MHV.Pennsylvania <- data[which(data$STATEFP==42),10]
-  B2005.Pennsylvania <- data[which(data$STATEFP==42),16]
+  MHV.Pennsylvania <- data.new[which(data.new$STATEFP==42),10]
+  B2005.Pennsylvania <- data.new[which(data.new$STATEFP==42),16]
   cor(MHV.Pennsylvania,B2005.Pennsylvania,use = "complete.obs")
 ```
 #### 4. Для округа Butte County
 ```{r}
-  MHV.California.ButteCounty <- data[which(data$STATEFP==6 & data$COUNTYFP==7),10]
-  B2005.California.ButteCounty <- data[which(data$STATEFP==6 & data$COUNTYFP==7),16]
+  MHV.California.ButteCounty <- data.new[which(data.new$STATEFP==6 & data.new$COUNTYFP==7),10]
+  B2005.California.ButteCounty <- data.new[which(data.new$STATEFP==6 & data.new$COUNTYFP==7),16]
   cor(MHV.California.ButteCounty,B2005.California.ButteCounty,use = "complete.obs")
 ```
 #### 5. Для округа Santa Clara
 ```{r}
-  MHV.California.SantaClara <- data[which(data$STATEFP==6 & data$COUNTYFP==85),10]
-  B2005.California.SantaClara <- data[which(data$STATEFP==6 & data$COUNTYFP==85),16]
+  MHV.California.SantaClara <- data.new[which(data.new$STATEFP==6 & data.new$COUNTYFP==85),10]
+  B2005.California.SantaClara <- data.new[which(data.new$STATEFP==6 & data.new$COUNTYFP==85),16]
   cor(MHV.California.SantaClara,B2005.California.SantaClara,use = "complete.obs")
 ```
 #### 6. Для округа York County
 ```{r}
-  MHV.Pennsylvania.YorkCounty <- data[which(data$STATEFP==42 & data$COUNTYFP==133),10]
-  B2005.Pennsylvania.YorkCounty <- data[which(data$STATEFP==42 & data$COUNTYFP==133),16]
+  MHV.Pennsylvania.YorkCounty <- data.new[which(data.new$STATEFP==42 & data.new$COUNTYFP==133),10]
+  B2005.Pennsylvania.YorkCounty <- data.new[which(data.new$STATEFP==42 & data.new$COUNTYFP==133),16]
   cor(MHV.Pennsylvania.YorkCounty,B2005.Pennsylvania.YorkCounty,use = "complete.obs")
 
 ```
 
 ### Нахождение Median_house_value и Median_household_income для трёх округов
 ```{r}
-  MHV.California.ButteCounty <- data[which(data$STATEFP==6 & data$COUNTYFP==7),10]
-  MHI.California.ButteCounty <- data[which(data$STATEFP==6 & data$COUNTYFP==7),33]
+  MHV.California.ButteCounty <- data.new[which(data.new$STATEFP==6 & data.new$COUNTYFP==7),10]
+  MHI.California.ButteCounty <- data.new[which(data.new$STATEFP==6 & data.new$COUNTYFP==7),33]
   
 
-  MHV.California.SantaClara <- data[which(data$STATEFP==6 & data$COUNTYFP==85),10]
-  MHI.California.SantaClara <- data[which(data$STATEFP==6 & data$COUNTYFP==85),33]
+  MHV.California.SantaClara <- data.new[which(data.new$STATEFP==6 & data.new$COUNTYFP==85),10]
+  MHI.California.SantaClara <- data.new[which(data.new$STATEFP==6 & data.new$COUNTYFP==85),33]
   
 
-  MHV.Pennsylvania.YorkCounty <- data[which(data$STATEFP==42 & data$COUNTYFP==133),10]
-  MHI.Pennsylvania.YorkCounty <- data[which(data$STATEFP==42 & data$COUNTYFP==133),33]
+  MHV.Pennsylvania.YorkCounty <- data.new[which(data.new$STATEFP==42 & data.new$COUNTYFP==133),10]
+  MHI.Pennsylvania.YorkCounty <- data.new[which(data.new$STATEFP==42 & data.new$COUNTYFP==133),33]
 ```
 
 ### Построение графиков Median_house_value(Median_household_income) для трех округов
