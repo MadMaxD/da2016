@@ -1,0 +1,71 @@
+---
+title: "lab5"
+author: "Max Dubovkin"
+date: '10 декабря 2016 г '
+output: html_document
+---
+# Лабораторная работа №5
+```{r}
+library(MASS)
+data(cats)
+```
+
+### 1,3. Функции для расчёта значений a and s и функция для расчёта оценки a and s
+```{r}
+  gamma.estimate <- function(data) {
+      m <- mean(data)
+      v <- var(data)
+      s <- v/m
+      a <- m/s
+      return(c(a=a,s=s))
+  }
+
+  my.gamma.jk <- function(data){
+    without <- c()
+    for (i in 1:nrow(data)) {
+      select.vector <- which(!(1:nrow(data)) %in% i)
+      without <- append(without, gamma.estimate(data$Hwt[select.vector]))
+    }
+    assessment.A <- var(without[seq(1,length(without),by=2)])
+    assessment.S <- var(without[seq(2,length(without),by=2)])
+    return(c(assessment.A=sqrt(assessment.A),assessment.S=sqrt(assessment.S)))
+  }
+```
+### 2. Взятие 4 первых кошек и вычисление стандартной ошибки с помощью исключения каждой кошки отдельно и подсчёт квадратного корня из дисперсии полученных значений
+```{r}
+    data.4.cats.F <-cats[1:4,]
+    without1 <- gamma.estimate(data.4.cats.F$Hwt[2:4])
+    without2 <-gamma.estimate(data.4.cats.F$Hwt[c(1,3:4)])
+    without3 <-gamma.estimate(data.4.cats.F$Hwt[c(1:2,4)])
+    without4 <-gamma.estimate(data.4.cats.F$Hwt[1:3])
+    without <- c(without1,without2,without3,without4)
+    sqrt(var(without[seq(1,length(without),by=2)]))
+    sqrt(var(without[seq(2,length(without),by=2)]))
+```
+### 4. Результаты работы п.2 и функции my.gamma.jk совпадают
+```{r}
+  my.gamma.jk(data.4.cats.F)
+```
+### 5. Получение стандартной ошибки для полного набора данных
+```{r}
+  my.gamma.jk(cats)
+```
+### 6. Расчет параметров для a and s для котов и кошек. Стандартная ошибка a and s для котов и кошек
+```{r}
+  gamma.estimate(cats$Hwt[cats$Sex=="F"])
+  gamma.estimate(cats$Hwt[cats$Sex=="M"])
+  FEM <- my.gamma.jk(cats[cats$Sex=="F",])
+  MAL <- my.gamma.jk(cats[cats$Sex=="M",])
+  FEM
+  MAL
+```
+### 7. Стандартное отклонение разницы кошек и котов для a and s
+```{r}
+  assessment.A.FM <- sqrt(FEM[1]**2+MAL[1]**2)
+  names(assessment.A.FM) <- c("assessment.A.FM")
+  assessment.A.FM
+  assessment.S.FM<- sqrt(MAL[2]**2+FEM[2]**2)
+  names(assessment.S.FM) <- c("assessment.S.FM")
+  assessment.S.FM
+```
+### 8.  Пол влияет на вес сердца кошачьего. Присутсвует сдвиг стандартной ошибки разницы в сторону стандартной ошибки A and S кошек(Female).
