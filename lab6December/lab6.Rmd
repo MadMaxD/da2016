@@ -1,0 +1,100 @@
+---
+title: "lab6"
+author: "Max Dubovkin"
+date: '17 декабря 2016 г '
+output: html_document
+---
+
+# Лабораторная работа №6
+## Задание 1
+### 1. Загрузка данных и создание нового датафрейма со столбцами Год, Р99, Р99.5, Р99.9 и переименование столбцов для удовбства
+```{r}
+    temp <- read.csv("https://raw.githubusercontent.com/SergeyMirvoda/da2016/master/lab6/wtid-report.csv")
+    data <- temp[,c(2,5:7)]
+    names(data) <- c("Year", "P99", "P99.5", "P99.9")
+    data$P99[which(data$Year=="1972")]
+    data$P99.5[which(data$Year=="1942")]
+    data$P99.9[which(data$Year=="1922")]
+```
+
+### 2. Построение Диаграммы рассеяния P99-P99.9 от года
+```{r}
+    plot(data$P99~data$Year,xlab="Year",ylab = "P99")
+    plot(data$P99.5~data$Year,xlab="Year",ylab = "P99.5")
+    plot(data$P99.9~data$Year,xlab="Year",ylab = "P99.9")
+```
+
+### 3. Создание функции my.exp.estimate_ratio
+```{r}
+    my.exp.estimate_ratio <- function(x){
+      a <- 1 - log(10)/log(x$P99/x$P99.9)
+      return(a)
+    }
+```
+
+> Проверка на возрат а=2
+
+```{r}
+    1 - log(10)/log(1e6/1e7)
+```
+
+> Запуск функции
+
+```{r}
+    my.exp.estimate_ratio(data)
+```
+## Задание 2
+### 4. Получение а для каждого года в наборе данных.
+```{r}
+  data$a <- my.exp.estimate_ratio(data)
+```
+```{r, echo=FALSE}
+  data
+```
+```{r}
+    plot(data$P99~data$Year,xlab="Year",ylab = "P..",col="red",ylim=range(min(data$P99,data$P99.9),max(data$P99,data$P99.9)))
+    par(new=TRUE)
+    plot(data$P99.9~data$Year,xlab="Year",ylab = "P..",col="blue",ylim=range(min(data$P99,data$P99.9),max(data$P99,data$P99.9)))
+    legend("topleft",c("P99", "P99.9"),col=c('red','blue'),lwd=2)
+```
+```{r}
+    plot(data$a~data$Year,xlab="Year",ylab = "a")
+```
+
+> Чем ближе значения значения для Р99 и Р99.9 тем больше коэффицент а
+
+### 5. Расчёт приблеженного количества домохозяйств по формуле Парето в 2012 году
+```{r}
+    a.2012 <- data$a[which(data$Year=="2012")]
+```
+```{r,echo=FALSE}
+  a.2012
+```
+```{r}
+    x <- max(data[which(data$Year=="2012"),])
+    profit.80 <- x*0.2 # нижняя границы прибыльности
+    (profit.80/x)^(-a.2012+1) # проверка на закон Парета
+```
+
+> Пропорция 1/13 укаывает на владение 80% доходов владеет 8% населения
+
+### 6. Вычисление пропорции P99.5 and P99.9
+```{r}
+    Pr <- function(up,down,a){
+    return((up/down)^(-a+1))
+    }
+```
+```{r}
+    plot(Pr(data$P99.5,data$P99.9,data$a)~data$Year,ylab="Pr",xlab="Year")
+    abline(5,0,lwd=2,col='red')
+```
+
+> Полученные значения пропорции примерно равномерно распределены вокруг ожидаемого значения прмой с коэффициентом 5
+
+### 7.Вычисление пропорции P90 and P95
+```{r}
+    plot(Pr(temp$P90.income.threshold,temp$P95.income.threshold,data$a)~data$Year,ylab="Pr",xlab="Year")
+    abline(2,0,lwd=2,col='red')
+```
+
+> Ожидаемые значения р90 and p95 находиться выше пропорций, которые прослеживаются на графикие из пункта 6 
